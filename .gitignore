@@ -1,0 +1,11 @@
+# Mac
+**/.DS_store
+
+# VSCode
+**/.vscode
+
+# NPM
+**/node_modules
+
+# Misc
+**/.env

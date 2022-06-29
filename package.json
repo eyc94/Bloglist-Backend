@@ -1,0 +1,19 @@
+{
+  "name": "bloglist-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eyc94/Bloglist-Backend.git"
+  },
+  "author": "EC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eyc94/Bloglist-Backend/issues"
+  },
+  "homepage": "https://github.com/eyc94/Bloglist-Backend#readme"
+}
