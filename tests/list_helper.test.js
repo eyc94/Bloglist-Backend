@@ -64,6 +64,31 @@ const listWithManyBlogs = [
     }
 ];
 
+describe("Favorite blog", () => {
+    test("of an empty list is null", () => {
+        const result = listHelper.favoriteBlog(listWithNoBlog);
+        expect(result).toBe(null);
+    });
+
+    test("of a list with one blog is the list itself", () => {
+        const result = listHelper.favoriteBlog(listWithOneBlog);
+        expect(result).toEqual({
+            title: "Go To Statement Considered Harmful",
+            author: "Edsger W. Dijkstra",
+            likes: 5
+        })
+    });
+
+    test("of a list with many blogs is 'Canonical string reduction'", () => {
+        const result = listHelper.favoriteBlog(listWithManyBlogs);
+        expect(result).toEqual({
+            title: "Canonical string reduction",
+            author: "Edsger W. Dijkstra",
+            likes: 12
+        });
+    });
+});
+
 describe("Total likes", () => {
     test("of empty list is 0", () => {
         const result = listHelper.totalLikes(listWithNoBlog);
