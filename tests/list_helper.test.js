@@ -77,7 +77,7 @@ describe("Total likes", () => {
 
     test("of list with many blogs equals to the sum of all likes", () => {
         const result = listHelper.totalLikes(listWithManyBlogs);
-        expect(result).toBe(32);
+        expect(result).toBe(36);
     });
 });
 
