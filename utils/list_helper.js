@@ -4,7 +4,6 @@ const totalLikes = (blogs) => {
     }, 0);
 };
 
-
 const dummy = (blogs) => {
     return 1;
 };
