@@ -1,4 +1,8 @@
 const favoriteBlog = (blogs) => {
+    if (blogs.length === 0) {
+        return null;
+    }
+
     let favoriteBlogIndex = 0;
     for (let i = 0; i < blogs.length; i++) {
         if (blogs[i].likes > blogs[favoriteBlogIndex].likes) {
