@@ -7,7 +7,7 @@
         "start": "node index.js",
         "dev": "nodemon index.js",
         "lint": "eslint .",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest --verbose"
     },
     "repository": {
         "type": "git",
@@ -21,6 +21,7 @@
     "homepage": "https://github.com/eyc94/Bloglist-Backend#readme",
     "devDependencies": {
         "eslint": "^8.18.0",
+        "jest": "^28.1.2",
         "nodemon": "^2.0.18"
     },
     "dependencies": {
