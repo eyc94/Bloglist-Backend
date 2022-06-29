@@ -9,7 +9,14 @@ const favoriteBlog = (blogs) => {
             favoriteBlogIndex = i;
         }
     }
-    return blogs[favoriteBlogIndex];
+
+    const favoriteBlogObject = {
+        title: blogs[favoriteBlogIndex].title,
+        author: blogs[favoriteBlogIndex].author,
+        likes: blogs[favoriteBlogIndex].likes
+    };
+
+    return favoriteBlogObject;
 };
 
 const totalLikes = (blogs) => {
