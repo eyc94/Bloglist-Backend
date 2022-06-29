@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/eyc94/Bloglist-Backend#readme",
     "devDependencies": {
+        "eslint": "^8.18.0",
         "nodemon": "^2.0.18"
     },
     "dependencies": {
