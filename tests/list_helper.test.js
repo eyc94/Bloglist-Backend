@@ -64,6 +64,29 @@ const listWithManyBlogs = [
     }
 ];
 
+describe("Most blogs", () => {
+    test("of an empty list is an empty list", () => {
+        const result = listHelper.mostBlogs(listWithNoBlog);
+        expect(result).toEqual({});
+    });
+
+    test("of a list with one blog is the list itself with 1 blog", () => {
+        const result = listHelper.mostBlogs(listWithOneBlog);
+        expect(result).toEqual({
+            author: "Edsger W. Dijkstra",
+            blogs: 1
+        });
+    });
+
+    test("of a list with many blogs is Robert C. Martin's 3 blogs", () => {
+        const result = listHelper.mostBlogs(listWithManyBlogs);
+        expect(result).toEqual({
+            author: "Robert C. Martin",
+            blogs: 3
+        });
+    })
+});
+
 describe("Favorite blog", () => {
     test("of an empty list is null", () => {
         const result = listHelper.favoriteBlog(listWithNoBlog);
