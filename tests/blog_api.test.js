@@ -20,7 +20,7 @@ test("Notes are returned as JSON", async () => {
         .expect("Content-Type", /application\/json/);
 }, 100000);
 
-test("There is no note", async () => {
+test("Checks to see that the correct amount of notes are returned", async () => {
     const response = await api.get("/api/blogs");
     expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
