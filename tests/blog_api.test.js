@@ -25,6 +25,13 @@ test("Checks to see that the correct amount of notes are returned", async () => 
     expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
+test("Verify that the unique id proeprty is named 'id'", async () => {
+    const allBlogs = await helper.blogsInDb();
+    const firstBlog = allBlogs[0];
+
+    expect(firstBlog.id).toBeDefined();
+});
+
 afterAll(() => {
     mongoose.connection.close();
 });
