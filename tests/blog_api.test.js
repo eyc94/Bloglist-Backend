@@ -69,6 +69,21 @@ test("A blog with no likes is given 0 likes", async () => {
     expect(response.body.likes).toBe(0);
 });
 
+test("A blog with no title or url is a 400 bad request", async () => {
+    const blogWithNoTitleAndUrl = {
+        author: "ABC",
+        likes: 332
+    };
+
+    await api
+        .post("/api/blogs")
+        .send(blogWithNoTitleAndUrl)
+        .expect(400);
+
+    const response = await helper.blogsInDb();
+    expect(response).toHaveLength(helper.initialBlogs.length);
+});
+
 afterAll(() => {
     mongoose.connection.close();
 });
