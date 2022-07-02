@@ -53,6 +53,22 @@ test("A valid blog can be added", async () => {
     expect(titles).toContain("Sample Blog 3");
 });
 
+test("A blog with no likes is given 0 likes", async () => {
+    const newBlogWithNoLikes = {
+        title: "Sample Blog 3",
+        author: "ABC",
+        url: "https://www.youtube.com"
+    };
+
+    const response = await api
+        .post("/api/blogs")
+        .send(newBlogWithNoLikes)
+        .expect(201)
+        .expect("Content-Type", /application\/json/);
+
+    expect(response.body.likes).toBe(0);
+});
+
 afterAll(() => {
     mongoose.connection.close();
 });
