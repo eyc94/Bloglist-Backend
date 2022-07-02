@@ -24,7 +24,7 @@ blogsRouter.post("/", async (request, response) => {
     response.status(201).json(savedBlog);
 });
 
-blogsRouter.delete("/api/blogs/:id", async (request, response) => {
+blogsRouter.delete("/:id", async (request, response) => {
     await Blog.findByIdAndRemove(request.params.id);
     response.status(204).end();
 });
