@@ -15,14 +15,14 @@ beforeEach(async () => {
     await Promise.all(promiseArray);
 });
 
-test("Notes are returned as JSON", async () => {
+test("Blogs are returned as JSON", async () => {
     await api
         .get("/api/blogs")
         .expect(200)
         .expect("Content-Type", /application\/json/);
 }, 100000);
 
-test("Checks to see that the correct amount of notes are returned", async () => {
+test("Checks to see that the correct amount of blogs are returned", async () => {
     const response = await api.get("/api/blogs");
     expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
@@ -34,70 +34,160 @@ test("Verify that the unique id proeprty is named 'id'", async () => {
     expect(firstBlog.id).toBeDefined();
 });
 
-test("A valid blog can be added", async () => {
-    const newBlog = {
-        title: "Sample Blog 3",
-        author: "ABC",
-        url: "https://www.youtube.com",
-        likes: 332
-    };
+describe("Testing the creation of blogs with user tokens", () => {
+    beforeEach(async () => {
+        await User.deleteMany({});
 
-    await api
-        .post("/api/blogs")
-        .send(newBlog)
-        .expect(201)
-        .expect("Content-Type", /application\/json/);
+        const passwordHash = await bcrypt.hash("supersecret", 10);
+        const user = new User({ username: "superuser", passwordHash });
 
-    const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+        await user.save();
+    });
 
-    const titles = blogsAtEnd.map(b => b.title);
-    expect(titles).toContain("Sample Blog 3");
+    test("A valid blog can be added", async () => {
+        const targetUser = {
+            username: "superuser",
+            password: "supersecret"
+        };
+
+        const userResult = await api
+            .post("/api/login")
+            .send(targetUser)
+            .expect(200);
+
+        const { token } = userResult.body;
+
+        const newBlog = {
+            title: "Sample Blog 3",
+            author: "ABC",
+            url: "https://www.youtube.com",
+            likes: 332
+        };
+
+        await api
+            .post("/api/blogs")
+            .set({ Authorization: `Bearer ${token}` })
+            .send(newBlog)
+            .expect(201)
+            .expect("Content-Type", /application\/json/);
+
+        const blogsAtEnd = await helper.blogsInDb();
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+        const titles = blogsAtEnd.map(b => b.title);
+        expect(titles).toContain("Sample Blog 3");
+    });
+
+    test("A blog with no likes is given 0 likes", async () => {
+        const targetUser = {
+            username: "superuser",
+            password: "supersecret"
+        };
+
+        const userResult = await api
+            .post("/api/login")
+            .send(targetUser)
+            .expect(200);
+
+        const { token } = userResult.body;
+
+        const newBlogWithNoLikes = {
+            title: "Sample Blog 3",
+            author: "ABC",
+            url: "https://www.youtube.com"
+        };
+
+        const response = await api
+            .post("/api/blogs")
+            .set({ Authorization: `Bearer ${token}` })
+            .send(newBlogWithNoLikes)
+            .expect(201)
+            .expect("Content-Type", /application\/json/);
+
+        expect(response.body.likes).toBe(0);
+    });
+
+    test("A blog with no title or url is a 400 bad request", async () => {
+        const targetUser = {
+            username: "superuser",
+            password: "supersecret"
+        };
+
+        const userResult = await api
+            .post("/api/login")
+            .send(targetUser)
+            .expect(200);
+
+        const { token } = userResult.body;
+
+        const blogWithNoTitleAndUrl = {
+            author: "ABC",
+            likes: 332
+        };
+
+        await api
+            .post("/api/blogs")
+            .set({ Authorization: `Bearer ${token}` })
+            .send(blogWithNoTitleAndUrl)
+            .expect(400);
+
+        const response = await helper.blogsInDb();
+        expect(response).toHaveLength(helper.initialBlogs.length);
+    });
 });
 
-test("A blog with no likes is given 0 likes", async () => {
-    const newBlogWithNoLikes = {
-        title: "Sample Blog 3",
-        author: "ABC",
-        url: "https://www.youtube.com"
-    };
 
-    const response = await api
-        .post("/api/blogs")
-        .send(newBlogWithNoLikes)
-        .expect(201)
-        .expect("Content-Type", /application\/json/);
+describe("Testing the deletion of blogs with user tokens", () => {
+    beforeEach(async () => {
+        await User.deleteMany({});
 
-    expect(response.body.likes).toBe(0);
-});
+        const passwordHash = await bcrypt.hash("supersecret", 10);
+        const user = new User({ username: "superuser", passwordHash });
 
-test("A blog with no title or url is a 400 bad request", async () => {
-    const blogWithNoTitleAndUrl = {
-        author: "ABC",
-        likes: 332
-    };
+        await user.save();
+    });
 
-    await api
-        .post("/api/blogs")
-        .send(blogWithNoTitleAndUrl)
-        .expect(400);
+    test("Deleting a blog is successful on blogs created by specific user", async () => {
+        const targetUser = {
+            username: "superuser",
+            password: "supersecret"
+        };
 
-    const response = await helper.blogsInDb();
-    expect(response).toHaveLength(helper.initialBlogs.length);
-});
+        const userResult = await api
+            .post("/api/login")
+            .send(targetUser)
+            .expect(200);
 
-test("Deleting a blog is successful", async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+        const { token } = userResult.body;
 
-    await api
-        .delete(`/api/blogs/${blogToDelete.id}`)
-        .expect(204);
+        const newBlog = {
+            title: "Dogs are better than cats!",
+            author: "Mr. Dog",
+            url: "https://www.dogs.com",
+            likes: 33235345234
+        };
 
-    const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
-    const titles = blogsAtEnd.map(b => b.title);
-    expect(titles).not.toContain(blogToDelete.title);
+        await api
+            .post("/api/blogs")
+            .set({ Authorization: `Bearer ${token}` })
+            .send(newBlog)
+            .expect(201)
+            .expect("Content-Type", /application\/json/);
+
+        const blogsAtStart = await helper.blogsInDb();
+        const blogToDelete = blogsAtStart[2];
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .set({ Authorization: `Bearer ${token}` })
+            .expect(204);
+
+        const blogsAtEnd = await helper.blogsInDb();
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+
+        const titles = blogsAtEnd.map(b => b.title);
+        expect(titles).not.toContain(blogToDelete.title);
+    });
 });
 
 test("Updating a blog", async () => {
@@ -115,7 +205,7 @@ test("Updating a blog", async () => {
     expect(updatedBlog.likes).toBe(999);
 });
 
-describe("When there is initially one user in db", () => {
+describe("Testing the creation of a user with one user in db", () => {
     beforeEach(async () => {
         await User.deleteMany({});
 
